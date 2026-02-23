@@ -1,0 +1,33 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: esports-calendar-backend
+  profiles:
+    active: dev
+
+  # H2 Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/db_name
+    driver-class-name: org.postgresql.Driver
+    username:
+    password:
+
+  # JPA Configuration
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+
+
+
+
+
