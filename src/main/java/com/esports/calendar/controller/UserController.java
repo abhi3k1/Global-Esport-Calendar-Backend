@@ -2,6 +2,7 @@ package com.esports.calendar.controller;
 
 import com.esports.calendar.model.User;
 import com.esports.calendar.service.UserService;
+import com.esports.calendar.dto.LoginRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,17 @@ public class UserController {
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<User> login(@RequestBody LoginRequest req) {
+        if (req == null || req.getEmail() == null || req.getPassword() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        Optional<User> user = userService.authenticate(req.getEmail(), req.getPassword());
+        return user.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null));
     }
 
     @PutMapping("/{id}")

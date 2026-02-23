@@ -45,6 +45,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    // New method: authenticate credentials by email + password
+    public Optional<User> authenticate(String email, String rawPassword) {
+        if (email == null || rawPassword == null) return Optional.empty();
+        return userRepository.findByEmail(email).filter(user -> {
+            String hashed = user.getPassword();
+            if (hashed == null) return false;
+            return passwordEncoder.matches(rawPassword, hashed);
+        });
+    }
+
     public User updateUser(Long id, User payload) {
         return userRepository.findById(id).map(u -> {
             u.setDisplayName(payload.getDisplayName());
