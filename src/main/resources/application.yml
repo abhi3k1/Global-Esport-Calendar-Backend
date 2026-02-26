@@ -9,22 +9,28 @@ spring:
   profiles:
     active: dev
 
-  # H2 Database Configuration
+  # PostgreSQL Datasource
   datasource:
-    url: jdbc:postgresql://localhost:5432/db_name
+    url: jdbc:postgresql://localhost:5432/avgc_users
     driver-class-name: org.postgresql.Driver
     username:
     password:
 
   # JPA Configuration
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+
+app:
+  jwt:
+    secret: "secret-key-change-in-production-32chars"
+    expiration-ms: 86400000   # 24 hours
+
 
 
 
