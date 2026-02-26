@@ -1,8 +1,10 @@
 package com.esports.calendar.controller;
 
-import com.esports.calendar.model.User;
-import com.esports.calendar.service.UserService;
 import com.esports.calendar.dto.LoginRequest;
+import com.esports.calendar.dto.LoginResponse;
+import com.esports.calendar.model.User;
+import com.esports.calendar.service.JwtUtil;
+import com.esports.calendar.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @GetMapping
     public ResponseEntity<List<User>> getAllUsers() {
@@ -43,14 +48,33 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> login(@RequestBody LoginRequest req) {
-        if (req == null || req.getEmail() == null || req.getPassword() == null) {
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest req) {
+        if (req == null || req.getPassword() == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
-        Optional<User> user = userService.authenticate(req.getEmail(), req.getPassword());
-        return user.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null));
+        Optional<User> userOpt;
+        if (req.getEmail() != null && !req.getEmail().isBlank()) {
+            // login by email
+            userOpt = userService.authenticate(req.getEmail(), req.getPassword());
+        } else if (req.getUsername() != null && !req.getUsername().isBlank()) {
+            // login by username
+            userOpt = userService.authenticateByUsername(req.getUsername(), req.getPassword());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        return userOpt.map(user -> {
+            String token = jwtUtil.generateToken(user.getId());
+            LoginResponse resp = new LoginResponse(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getDisplayName(),
+                    user.getEmail(),
+                    token
+            );
+            return ResponseEntity.ok(resp);
+        }).orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null));
     }
 
     @PutMapping("/{id}")
@@ -66,3 +90,5 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 }
+
+

@@ -55,6 +55,16 @@ public class UserService {
         });
     }
 
+    // Authenticate by username + password
+    public Optional<User> authenticateByUsername(String username, String rawPassword) {
+        if (username == null || rawPassword == null) return Optional.empty();
+        return userRepository.findByUsername(username).filter(user -> {
+            String hashed = user.getPassword();
+            if (hashed == null) return false;
+            return passwordEncoder.matches(rawPassword, hashed);
+        });
+    }
+
     public User updateUser(Long id, User payload) {
         return userRepository.findById(id).map(u -> {
             u.setDisplayName(payload.getDisplayName());

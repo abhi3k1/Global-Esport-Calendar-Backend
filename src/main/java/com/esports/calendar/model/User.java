@@ -34,6 +34,11 @@ public class User {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    // One-to-one back reference to Profile (shared primary key)
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Profile profile;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now(TimeZone.getTimeZone("IST").toZoneId());
