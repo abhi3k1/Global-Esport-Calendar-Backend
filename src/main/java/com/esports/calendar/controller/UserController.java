@@ -54,13 +54,14 @@ public class UserController {
         }
 
         Optional<User> userOpt;
+
+        // Support login by email OR username
         if (req.getEmail() != null && !req.getEmail().isBlank()) {
-            // login by email
             userOpt = userService.authenticate(req.getEmail(), req.getPassword());
         } else if (req.getUsername() != null && !req.getUsername().isBlank()) {
-            // login by username
             userOpt = userService.authenticateByUsername(req.getUsername(), req.getPassword());
         } else {
+            // Neither email nor username provided
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
@@ -90,5 +91,3 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
 }
-
-

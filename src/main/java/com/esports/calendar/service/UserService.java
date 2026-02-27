@@ -45,7 +45,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    // New method: authenticate credentials by email + password
+    // Authenticate by email + password
     public Optional<User> authenticate(String email, String rawPassword) {
         if (email == null || rawPassword == null) return Optional.empty();
         return userRepository.findByEmail(email).filter(user -> {

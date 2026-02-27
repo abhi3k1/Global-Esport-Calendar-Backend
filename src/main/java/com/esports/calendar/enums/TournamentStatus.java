@@ -1,4 +1,7 @@
 package com.esports.calendar.enums;
 
-public class TournamentStatus {
+public enum TournamentStatus {
+    LIVE,
+    REGISTRATION,
+    UPCOMING
 }
